@@ -75,7 +75,9 @@
       <Name>SafeConfig</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="data\temp\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="data\empty\empty.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
