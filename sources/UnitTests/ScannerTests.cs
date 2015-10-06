@@ -54,5 +54,18 @@ namespace UnitTests
 
 			Assert.Equal(result, value);
 		}
+
+
+		[Theory]
+		[InlineData("sql-connection", "Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;")]
+		void Save_Load_ValuesAreSame(string key, object value)
+		{
+			var scanner = new Scanner()
+				.Set(key, value)
+				.Do(x => x.AtFolder(@"data\temp\"))
+				.Do(x => x.Save());
+
+
+		}
 	}
 }
