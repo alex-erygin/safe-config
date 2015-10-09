@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using Nelibur.Sword.DataStructures;
@@ -16,7 +15,7 @@ namespace SafeConfig
 		/// <summary>
 		/// Configuration key-value storage.
 		/// </summary>
-	    private readonly Dictionary<string, object> storedValues = new Dictionary<string, object>();
+	    private Dictionary<string, object> storedValues = new Dictionary<string, object>();
 
 		/// <summary>
 		/// Folder, contains config.
@@ -38,31 +37,33 @@ namespace SafeConfig
 		/// </summary>
 		/// <param name="folder">Working folder.</param>
 		/// <returns>This if folder contains any config files or empty.</returns>
-	    public Option<Scanner> AtFolder(string folder)
+	    public Scanner AtFolder(string folder)
 	    {
-		    if (!Directory.Exists(folder))
-		    {
-			    return Option<Scanner>.Empty;
-		    }
-
 		    configFolder = folder;
+			if (!Directory.Exists(configFolder))
+			{
+				Directory.CreateDirectory(configFolder);
+			}
 
-			var files = Directory.GetFiles(configFolder, "*.safeconfig");
-		    if (files.Any())
-		    {
-			    return new Option<Scanner>(this);
-		    }
-
-		    return Option<Scanner>.Empty;
+		    return this;
 	    }
 		
 		/// <summary>
 		/// Load configuration from file.
 		/// </summary>
 		/// <returns>This.</returns>
-	    public Option<Scanner> Load()
-	    {
-		    return this.ToOption();
+	    public Scanner Load()
+		{
+			var protectedBuffer = File.ReadAllBytes(SettingsFilePath);
+			var unprotectedBuffer = ProtectedData.Unprotect(protectedBuffer, null, DataProtectionScope.LocalMachine);
+
+			var binFormatter = new BinaryFormatter();
+			using (var mStream = new MemoryStream(unprotectedBuffer))
+			{
+				storedValues = (Dictionary<string, object>)binFormatter.Deserialize(mStream);
+			}
+
+			return this;
 	    }
 
 		/// <summary>
@@ -72,27 +73,38 @@ namespace SafeConfig
 		/// <param name="key">Key.</param>
 		/// <param name="value">Value.</param>
 		/// <returns>This.</returns>
-	    public Option<Scanner> Set<T>(string key, T value)
+	    public Scanner Set<T>(string key, T value)
 	    {
 		    storedValues[key] = value;
-			return this.ToOption();
+			return this;
 		}
 
-
+		/// <summary>
+		/// Get setting value.
+		/// </summary>
+		/// <typeparam name="T">Type of value.</typeparam>
+		/// <param name="key">Key.</param>
+		/// <returns>Value or empty.</returns>
 	    public Option<T> Get<T>(string key)
 	    {
 		    return !storedValues.ContainsKey(key) ? Option<T>.Empty : ((T) storedValues[key]).ToOption();
 	    }
 
-	    public Option<Scanner> Save()
+		/// <summary>
+		/// Save settings to file.
+		/// </summary>
+		/// <returns>This or empty.</returns>
+	    public Scanner Save()
 	    {
 			var binFormatter = new BinaryFormatter();
-			var mStream = new MemoryStream();
-			binFormatter.Serialize(mStream, storedValues);
+			using (var mStream = new MemoryStream())
+			{
+				binFormatter.Serialize(mStream, storedValues);
+				var protectedData = ProtectedData.Protect(mStream.GetBuffer(), null, DataProtectionScope.LocalMachine);
+				File.WriteAllBytes(SettingsFilePath, protectedData);
+			}
 
-		    var protectedData = ProtectedData.Protect(mStream.GetBuffer(), null, DataProtectionScope.LocalMachine);
-			File.WriteAllBytes(SettingsFilePath, protectedData);
-		    return this.ToOption();
+			return this;
 	    }
     }
 }
