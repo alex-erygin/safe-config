@@ -2,15 +2,13 @@
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
-using Nelibur.Sword.DataStructures;
-using Nelibur.Sword.Extensions;
 
 namespace SafeConfig
 {
 	/// <summary>
 	/// Secure configuration manager.
 	/// </summary>
-    public class Scanner
+    public class ConfigManager
     {
 		/// <summary>
 		/// Configuration key-value storage.
@@ -23,7 +21,7 @@ namespace SafeConfig
 	    private string configFolder = ".";
 
 		/// <summary>
-		/// Config file name.
+		/// ConfigManager file name.
 		/// </summary>
 	    private string defaultSettingsFileName = "settings.saveconfig";
 
@@ -37,7 +35,7 @@ namespace SafeConfig
 		/// </summary>
 		/// <param name="folder">Working folder.</param>
 		/// <returns>This if folder contains any config files or empty.</returns>
-	    public Scanner AtFolder(string folder)
+	    public ConfigManager AtFolder(string folder)
 	    {
 		    configFolder = folder;
 			if (!Directory.Exists(configFolder))
@@ -52,7 +50,7 @@ namespace SafeConfig
 		/// Load configuration from file.
 		/// </summary>
 		/// <returns>This.</returns>
-	    public Scanner Load()
+	    public ConfigManager Load()
 		{
 			var protectedBuffer = File.ReadAllBytes(SettingsFilePath);
 			var unprotectedBuffer = ProtectedData.Unprotect(protectedBuffer, null, DataProtectionScope.LocalMachine);
@@ -73,7 +71,7 @@ namespace SafeConfig
 		/// <param name="key">Key.</param>
 		/// <param name="value">Value.</param>
 		/// <returns>This.</returns>
-	    public Scanner Set<T>(string key, T value)
+	    public ConfigManager Set<T>(string key, T value)
 	    {
 		    storedValues[key] = value;
 			return this;
@@ -85,16 +83,16 @@ namespace SafeConfig
 		/// <typeparam name="T">Type of value.</typeparam>
 		/// <param name="key">Key.</param>
 		/// <returns>Value or empty.</returns>
-	    public Option<T> Get<T>(string key)
+	    public T Get<T>(string key)
 	    {
-		    return !storedValues.ContainsKey(key) ? Option<T>.Empty : ((T) storedValues[key]).ToOption();
+		    return !storedValues.ContainsKey(key) ? default(T) : (T) storedValues[key];
 	    }
 
 		/// <summary>
 		/// Save settings to file.
 		/// </summary>
 		/// <returns>This or empty.</returns>
-	    public Scanner Save()
+	    public ConfigManager Save()
 	    {
 			var binFormatter = new BinaryFormatter();
 			using (var mStream = new MemoryStream())
