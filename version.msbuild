@@ -5,19 +5,16 @@
 
     <PropertyGroup>
         <ProductInfo>Safe config</ProductInfo>
-        <CompanyInfo>Alex Erygin</CompanyInfo>
-        <CopyrightInfo>Copyright 2015 Alex Erygin.</CopyrightInfo>
+        <CompanyInfo>Aleksandr Erygin</CompanyInfo>
+        <CopyrightInfo>Copyright 2015 Aleksandr Erygin.</CopyrightInfo>
         <TradeMarkInfo>Safe config</TradeMarkInfo>
         <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
         <Platform Condition="'$(Platform)' == ''">Any CPU</Platform>
         <AssemblyInformationalVersion Condition="'$(BUILD_NUMBER)' == ''">Compiled By $(USERNAME)</AssemblyInformationalVersion>
         <BUILD_NUMBER Condition="'$(BUILD_NUMBER)' == ''">0.0.0.0</BUILD_NUMBER>
-
-        <OutDir Condition="'$(OutDir)'==''">$(MSBuildThisFileDirectory)\Out</OutDir>
-        <ArtifactsOutDir Condition="'$(ArtifactsOutDir)'==''">$(OutDir)\$(Configuration)</ArtifactsOutDir>
     </PropertyGroup>
 
-    <Target Name="Version" DependsOnTargets="InstallerVersion">
+    <Target Name="Version">
         <AssemblyInfo CodeLanguage="CS"
                       OutputFile="$(MSBuildProjectDirectory)\GlobalAssemblyInfo.cs"
                       AssemblyProduct="$(ProductInfo)"
