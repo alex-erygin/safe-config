@@ -52,6 +52,11 @@ namespace SafeConfig
 		/// <returns>This.</returns>
 	    public ConfigManager Load()
 		{
+			if (!File.Exists(SettingsFilePath))
+			{
+				return this;
+			}
+
 			var protectedBuffer = File.ReadAllBytes(SettingsFilePath);
 			var unprotectedBuffer = ProtectedData.Unprotect(protectedBuffer, null, DataProtectionScope.LocalMachine);
 
