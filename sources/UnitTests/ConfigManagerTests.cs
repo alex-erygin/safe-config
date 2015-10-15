@@ -3,7 +3,7 @@ using Xunit;
 
 namespace UnitTests
 {
-	public class ScannerTests
+	public class ConfigManagerTests
 	{
 		[Fact]
 		private void AtFolder_ReturnsOption()
