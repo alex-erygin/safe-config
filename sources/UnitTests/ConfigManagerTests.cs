@@ -1,4 +1,5 @@
-﻿using SafeConfig;
+﻿using System.Security.Cryptography;
+using SafeConfig;
 using Xunit;
 
 namespace UnitTests
@@ -8,18 +9,19 @@ namespace UnitTests
 		[Fact]
 		private void AtFolder_ReturnsOption()
 		{
-			var scanner = new ConfigManager();
+			var configManager = new ConfigManager();
 			Assert.IsType<ConfigManager>(
-				scanner.AtFolder("2ED1FA2A-62B3-46E4-BB02-24008FA4373A"));
+				configManager.AtFolder("2ED1FA2A-62B3-46E4-BB02-24008FA4373A"));
 		}
 
 		[Theory]
-		[InlineData("sql-connection", "Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;")]
-		[InlineData("password","qwerty")]
-		[InlineData("id", "B9D46109-B6F7-45FD-8DE4-98E8975D6E6F")]
-		void Set_SomeKeysAndValues_GetAndEqual(string key, object value)
+		[InlineData("sql-connection", "Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;", DataProtectionScope.CurrentUser)]
+		[InlineData("password","qwerty", DataProtectionScope.LocalMachine)]
+		[InlineData("id", "B9D46109-B6F7-45FD-8DE4-98E8975D6E6F", DataProtectionScope.CurrentUser)]
+		void Set_SomeKeysAndValues_GetAndEqual(string key, object value, DataProtectionScope scope)
 		{
 			string result = new ConfigManager()
+				.WithScope(scope)
 				.Set(key, value)
 				.Get<string>(key);
 
@@ -30,13 +32,13 @@ namespace UnitTests
 		[InlineData("sql-connection", "Server=myServerAddress;Database=myDataBase;Uid=myUsername;Pwd=myPassword;")]
 		void Save_Load_ValuesAreSame(string key, object value)
 		{
-			var scanner = new ConfigManager()
+			var configManager = new ConfigManager()
+				.WithScope(DataProtectionScope.CurrentUser)
 				.Set(key, value)
 				.AtFolder(@"data\temp\")
 				.Save();
 
-			var loadedValue = new ConfigManager()
-				.AtFolder(@"data\temp\")
+			var loadedValue = configManager
 				.Load()
 				.Get<string>(key);
 

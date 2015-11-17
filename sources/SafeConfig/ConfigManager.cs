@@ -31,6 +31,11 @@ namespace SafeConfig
 	    private string SettingsFilePath => Path.Combine(configFolder, defaultSettingsFileName);
 
 		/// <summary>
+		/// Data protection scope. <see cref="DataProtectionScope"/>.
+		/// </summary>
+		private DataProtectionScope dataProtectionScope = DataProtectionScope.CurrentUser;
+
+		/// <summary>
 		/// Set working folder.
 		/// </summary>
 		/// <param name="folder">Working folder.</param>
@@ -45,6 +50,17 @@ namespace SafeConfig
 
 		    return this;
 	    }
+
+		/// <summary>
+		/// Set DataProtectionScope.
+		/// </summary>
+		/// <param name="scope">DataProtectionScope.</param>
+		/// <returns>This.</returns>
+		public ConfigManager WithScope(DataProtectionScope scope)
+		{
+			dataProtectionScope = scope;
+			return this;
+		}
 		
 		/// <summary>
 		/// Load configuration from file.
@@ -58,7 +74,7 @@ namespace SafeConfig
 			}
 
 			var protectedBuffer = File.ReadAllBytes(SettingsFilePath);
-			var unprotectedBuffer = ProtectedData.Unprotect(protectedBuffer, null, DataProtectionScope.LocalMachine);
+			var unprotectedBuffer = ProtectedData.Unprotect(protectedBuffer, null, dataProtectionScope);
 
 			var binFormatter = new BinaryFormatter();
 			using (var mStream = new MemoryStream(unprotectedBuffer))
