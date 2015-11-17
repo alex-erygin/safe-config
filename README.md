@@ -4,9 +4,12 @@ Simple configuration manager that uses [Data Protection API](https://msdn.micros
 ```cs
 //Save some configuration data at folder data\temp\
 var configManager = new ConfigManager()
+	.WithOptions(DataProtectionScope.CurrentUser)
 	.Set(key, value)
 	.AtFolder(@"data\temp\")
 	.Save();
+
+	...
 
 //Load configuration data
 var loadedValue = new ConfigManager()
