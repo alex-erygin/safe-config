@@ -10,6 +10,6 @@
     <description>Configuration manager powered by Windows Data Protection API.</description>
     <releaseNotes>Allow to set Data Protection Scope.</releaseNotes>
     <copyright>Copyright 2015</copyright>
-    <tags>Configuration, Security</tags>
+    <tags>.NET Configuration Security DPAPI Encryption</tags>
   </metadata>
 </package>
