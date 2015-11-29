@@ -36,16 +36,16 @@ namespace SafeConfig
 		/// </summary>
 		private DataProtectionScope dataProtectionScope = DataProtectionScope.CurrentUser;
 
-        /// <summary>
-        /// Set working folder to application folder.
-        /// </summary>
-        /// <returns>This.</returns>
-        public ConfigManager AtApplicationFolder()
-        {
-            string applicationFolder = AppDomain.CurrentDomain.BaseDirectory;
-            configFolder = applicationFolder;
-            return this;
-        }
+		/// <summary>
+		/// Set working folder to application folder.
+		/// </summary>
+		/// <returns>This.</returns>
+		public ConfigManager AtApplicationFolder()
+		{
+			string applicationFolder = AppDomain.CurrentDomain.BaseDirectory;
+			configFolder = applicationFolder;
+			return this;
+		}
 
 		/// <summary>
 		/// Set working folder.
