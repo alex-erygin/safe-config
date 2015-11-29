@@ -35,7 +35,7 @@ namespace UnitTests
 			var configManager = new ConfigManager()
 				.WithScope(DataProtectionScope.CurrentUser)
 				.Set(key, value)
-				.AtFolder(@"data\temp\")
+				.AtApplicationFolder()
 				.Save();
 
 			var loadedValue = configManager

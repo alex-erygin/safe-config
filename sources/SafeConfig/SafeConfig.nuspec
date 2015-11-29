@@ -8,7 +8,7 @@
     <projectUrl>https://github.com/alex-erygin/safe-config</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Configuration manager powered by Windows Data Protection API.</description>
-    <releaseNotes>Allow to set Data Protection Scope.</releaseNotes>
+    <releaseNotes>AtApplicationFolder method was added by https://github.com/FireAlkazar.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <tags>.NET Configuration Security DPAPI Encryption</tags>
   </metadata>
