@@ -68,17 +68,38 @@ namespace SafeConfig
 		/// </summary>
 		/// <param name="scope">DataProtectionScope.</param>
 		/// <returns>This.</returns>
+		[Obsolete("WithScope was depricated. Use WithCurrentUserScope or WithLocalMachineScope.")]
 		public ConfigManager WithScope(DataProtectionScope scope)
 		{
 			dataProtectionScope = scope;
 			return this;
 		}
-		
+
+		/// <summary>
+		/// Use current user data protection scope.
+		/// </summary>
+		/// <returns>This.</returns>
+		public ConfigManager WithCurrentUserScope()
+		{
+			dataProtectionScope = DataProtectionScope.CurrentUser;
+			return this;
+		}
+
+		/// <summary>
+		/// Use current user data protection scope.
+		/// </summary>
+		/// <returns>This.</returns>
+		public ConfigManager WithLocalMachineScope()
+		{
+			dataProtectionScope = DataProtectionScope.LocalMachine;
+			return this;
+		}
+
 		/// <summary>
 		/// Load configuration from file.
 		/// </summary>
 		/// <returns>This.</returns>
-	    public ConfigManager Load()
+		public ConfigManager Load()
 		{
 			if (!File.Exists(SettingsFilePath))
 			{
@@ -131,7 +152,7 @@ namespace SafeConfig
 			using (var mStream = new MemoryStream())
 			{
 				binFormatter.Serialize(mStream, storedValues);
-				var protectedData = ProtectedData.Protect(mStream.GetBuffer(), null, DataProtectionScope.LocalMachine);
+				var protectedData = ProtectedData.Protect(mStream.GetBuffer(), null, dataProtectionScope);
 				File.WriteAllBytes(SettingsFilePath, protectedData);
 			}
 

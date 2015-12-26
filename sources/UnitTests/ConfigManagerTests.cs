@@ -7,9 +7,10 @@ namespace UnitTests
 	public class ConfigManagerTests
 	{
 		[Fact]
-		private void AtFolder_ReturnsOption()
+		private void AtFolder_ReturnsSelf()
 		{
-			var configManager = new ConfigManager();
+			var configManager = new ConfigManager()
+				.WithLocalMachineScope();
 			Assert.IsType<ConfigManager>(
 				configManager.AtFolder("2ED1FA2A-62B3-46E4-BB02-24008FA4373A"));
 		}
@@ -33,7 +34,7 @@ namespace UnitTests
 		void Save_Load_ValuesAreSame(string key, object value)
 		{
 			var configManager = new ConfigManager()
-				.WithScope(DataProtectionScope.CurrentUser)
+				.WithLocalMachineScope()
 				.Set(key, value)
 				.AtApplicationFolder()
 				.Save();
