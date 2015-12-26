@@ -52,16 +52,29 @@ namespace SafeConfig
 		/// </summary>
 		/// <param name="folder">Working folder.</param>
 		/// <returns>This if folder contains any config files or empty.</returns>
+		/// <exception cref="SafeConfigException">Can not create directory.</exception>
 	    public ConfigManager AtFolder(string folder)
 	    {
-		    configFolder = folder;
+			try
+			{
+				return DoSetFolder(folder);
+			}
+			catch (Exception ex)
+			{
+				throw new SafeConfigException("Cannot set safeconfig folder", ex);
+			}
+	    }
+
+		private ConfigManager DoSetFolder(string folder)
+		{
+			configFolder = folder;
 			if (!Directory.Exists(configFolder))
 			{
 				Directory.CreateDirectory(configFolder);
 			}
 
-		    return this;
-	    }
+			return this;
+		}
 
 		/// <summary>
 		/// Set DataProtectionScope.
@@ -101,6 +114,18 @@ namespace SafeConfig
 		/// <returns>This.</returns>
 		public ConfigManager Load()
 		{
+			try
+			{
+				return DoLoad();
+			}
+			catch (Exception ex)
+			{
+				throw new SafeConfigException("Can not load config.", ex);
+			}
+		}
+
+		private ConfigManager DoLoad()
+		{
 			if (!File.Exists(SettingsFilePath))
 			{
 				return this;
@@ -112,11 +137,11 @@ namespace SafeConfig
 			var binFormatter = new BinaryFormatter();
 			using (var mStream = new MemoryStream(unprotectedBuffer))
 			{
-				storedValues = (Dictionary<string, object>)binFormatter.Deserialize(mStream);
+				storedValues = (Dictionary<string, object>) binFormatter.Deserialize(mStream);
 			}
 
 			return this;
-	    }
+		}
 
 		/// <summary>
 		/// Set setting value.
@@ -148,6 +173,18 @@ namespace SafeConfig
 		/// <returns>This or empty.</returns>
 	    public ConfigManager Save()
 	    {
+			try
+			{
+				return DoSave();
+			}
+			catch (Exception ex)
+			{
+				throw new SafeConfigException("Can not save settings", ex);
+			}
+	    }
+
+		private ConfigManager DoSave()
+		{
 			var binFormatter = new BinaryFormatter();
 			using (var mStream = new MemoryStream())
 			{
@@ -157,6 +194,6 @@ namespace SafeConfig
 			}
 
 			return this;
-	    }
+		}
     }
 }
