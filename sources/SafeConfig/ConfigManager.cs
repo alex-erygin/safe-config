@@ -36,6 +36,11 @@ namespace SafeConfig
 		/// </summary>
 		private DataProtectionScope dataProtectionScope = DataProtectionScope.CurrentUser;
 
+        /// <summary>
+        /// Helps to increase complexety of encryption.
+        /// </summary>
+        private byte[] entropy = null;
+
 		/// <summary>
 		/// Set working folder to application folder.
 		/// </summary>
@@ -132,7 +137,7 @@ namespace SafeConfig
 			}
 
 			var protectedBuffer = File.ReadAllBytes(SettingsFilePath);
-			var unprotectedBuffer = ProtectedData.Unprotect(protectedBuffer, null, dataProtectionScope);
+			var unprotectedBuffer = ProtectedData.Unprotect(protectedBuffer, entropy, dataProtectionScope);
 
 			var binFormatter = new BinaryFormatter();
 			using (var mStream = new MemoryStream(unprotectedBuffer))
@@ -189,11 +194,22 @@ namespace SafeConfig
 			using (var mStream = new MemoryStream())
 			{
 				binFormatter.Serialize(mStream, storedValues);
-				var protectedData = ProtectedData.Protect(mStream.GetBuffer(), null, dataProtectionScope);
+				var protectedData = ProtectedData.Protect(mStream.GetBuffer(), entropy, dataProtectionScope);
 				File.WriteAllBytes(SettingsFilePath, protectedData);
 			}
 
 			return this;
 		}
+
+        /// <summary>
+        /// Use entropy to increase complexety of encryption.
+        /// </summary>
+        /// <param name="entropy">Entropy.</param>
+        /// <returns>This.</returns>
+	    public ConfigManager WithEntropy(byte[] entropy)
+	    {
+	        this.entropy = entropy;
+	        return this;
+	    }
     }
 }
